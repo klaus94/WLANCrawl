@@ -2,4 +2,6 @@
     <string name="app_name">WLANCrawl</string>
     <string name="findWlan">find WLAN</string>
     <string name="password_for">password for net %1$s is: %2$s</string>
+    <string name="permission_denied">permission denied</string>
+    <string name="explain_permission">you need to give us this permission!!!</string>
 </resources>
