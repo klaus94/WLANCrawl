@@ -27,6 +27,7 @@ public class HackModul implements Iterator<String>
 
         generatedPasswords = new LinkedList<String>();
 
+
         // generate list
         generatedPasswords.addAll(naivPasswords());
         generatedPasswords.addAll(addedNumPasswords());

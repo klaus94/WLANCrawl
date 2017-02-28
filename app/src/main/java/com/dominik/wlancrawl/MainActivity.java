@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity
 
     private WifiManager wifi;
     private BroadcastReceiver wifiReciever;
+    private String currentPas = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -139,7 +140,7 @@ public class MainActivity extends AppCompatActivity
             public void run()
             {
                 HackModul hackModul = new HackModul(ssid);
-                String currentPas = "";
+
                 boolean isConnected = false;
 
                 while (hackModul.hasNext())
@@ -153,12 +154,21 @@ public class MainActivity extends AppCompatActivity
                         ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-                        if (mWifi.isConnected())
+                        if (mWifi.isConnectedOrConnecting())
                         {
                             Log.i("WIFI", "found wlan");
-                            TextView txtPas = (TextView) findViewById(R.id.txtPassword);
-                            String text = String.format(getString(R.string.password_for), ssid, currentPas);
-                            txtPas.setText(text);
+
+                            runOnUiThread(new Runnable()
+                            {
+                                @Override
+                                public void run()
+                                {
+                                    TextView txtPas = (TextView) findViewById(R.id.txtPassword);
+                                    String text = String.format(getString(R.string.password_for), ssid, currentPas);
+                                    txtPas.setText(text);
+                                }
+                            });
+
                             isConnected = true;
                             break;
                         }
