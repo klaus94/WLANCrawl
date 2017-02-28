@@ -111,7 +111,7 @@ public class HackModul implements Iterator<String>
         List<String> result = new LinkedList<String>();
 
 
-        for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 100; i++)
         {
             result.add(ssid + Integer.toString(i));
         }

@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">WLANCrawl</string>
-    <string name="findWlan">find WLAN</string>
-    <string name="password_for">password for net %1$s is: %2$s</string>
+    <string name="findWlan">find WIFI</string>
+    <string name="password_for">password for %1$s is: %2$s</string>
     <string name="permission_denied">permission denied</string>
     <string name="explain_permission">you need to give us this permission!!!</string>
+    <string name="no_pas_found">hacking wifi %1s$ not successful :(</string>
+    <string name="hacking">hacking WIFI %1$s...</string>
 </resources>

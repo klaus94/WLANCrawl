@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">WLANCrawl</string>
+    <string name="findWlan">suche WIFI</string>
+    <string name="password_for">Passwort für %1$s ist: %2$s</string>
+    <string name="permission_denied">Erlaubnis verweigert</string>
+    <string name="explain_permission">Du musst uns die Berechtigung geben!!!</string>
+    <string name="no_pas_found">WIFI %1$s konnte nicht gehackt werden :(</string>
+    <string name="hacking">hacke WIFI %1$s...</string>
+</resources>
