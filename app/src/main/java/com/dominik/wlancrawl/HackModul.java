@@ -29,12 +29,14 @@ public class HackModul implements Iterator<String>
 
 
         // generate list
+
         generatedPasswords.addAll(naivPasswords());
         generatedPasswords.addAll(addedNumPasswords());
-
         generatedPasswords.addAll(yearPasswords());
         generatedPasswords.addAll(dictionaryPasswords());
 
+        // remove all passwords with length less then 8
+        generatedPasswords = clear(generatedPasswords);
     }
 
     public boolean hasNext()
@@ -52,7 +54,7 @@ public class HackModul implements Iterator<String>
 
     private List<String> naivPasswords()
     {
-        List<String> result = new LinkedList<String>();
+        List<String> result = new LinkedList<>();
         result.add(ssid);                                   // "Maja Cafe"
         result.add(ssid.replace(" ", ""));                  // "MajaCafe"
         result.add(ssid.toLowerCase());                     // "maja cafe"
@@ -76,7 +78,7 @@ public class HackModul implements Iterator<String>
 
     private List<String> dictionaryPasswords()
     {
-        List<String> result = new LinkedList<String>();
+        List<String> result = new LinkedList<>();
         result.add("guest");
         result.add("GUEST");
         result.add("freewifi");
@@ -97,7 +99,8 @@ public class HackModul implements Iterator<String>
         // todo: optimization would be to use password from naiv method and append year to all passwords
 
 
-        List<String> result = new LinkedList<String>();
+        List<String> result = new LinkedList<>();
+
         for (int i = 10; i < 18; i++)
         {
             result.add(ssid + Integer.toString(i));         // "Maja Cafe17"
@@ -109,12 +112,24 @@ public class HackModul implements Iterator<String>
 
     private List<String> addedNumPasswords()
     {
-        List<String> result = new LinkedList<String>();
-
+        List<String> result = new LinkedList<>();
 
         for (int i = 0; i < 100; i++)
         {
             result.add(ssid + Integer.toString(i));
+        }
+
+        return result;
+    }
+
+    private List<String> clear(List<String> list)
+    {
+        List<String> result = new LinkedList<>();
+
+        for (String s: list)
+        {
+            if (s.length() >= 8)
+                result.add(s);
         }
 
         return result;

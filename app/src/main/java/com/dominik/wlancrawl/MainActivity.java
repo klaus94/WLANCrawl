@@ -115,11 +115,11 @@ public class MainActivity extends AppCompatActivity
         wc.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
 
         int res = wifi.addNetwork(wc);
-        Log.d("WifiPreference", "add Network returned " + res);
+//        Log.d("WifiPreference", "add Network returned " + res);
         boolean b = wifi.enableNetwork(res, true);
-        Log.d("WifiPreference", "enableNetwork returned " + b);
+//        Log.d("WifiPreference", "enableNetwork returned " + b);
         boolean c = wifi.reconnect();
-        Log.d("WifiPreference", "reconnect returned " + c);
+//        Log.d("WifiPreference", "reconnect returned " + c);
 
         return (res != -1) && b && c;  // todo: how to recognise, when password was correct !?
     }
@@ -149,29 +149,27 @@ public class MainActivity extends AppCompatActivity
 
                     Log.i("WIFI", "try: " + currentPas);
 
-                    if (connect(ssid, currentPas))
+                    connect(ssid, currentPas);
+                    ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                    NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+                    if (mWifi.isConnectedOrConnecting())
                     {
-                        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                        Log.i("WIFI", "found wlan");
 
-                        if (mWifi.isConnectedOrConnecting())
+                        runOnUiThread(new Runnable()
                         {
-                            Log.i("WIFI", "found wlan");
-
-                            runOnUiThread(new Runnable()
+                            @Override
+                            public void run()
                             {
-                                @Override
-                                public void run()
-                                {
-                                    TextView txtPas = (TextView) findViewById(R.id.txtPassword);
-                                    String text = String.format(getString(R.string.password_for), ssid, currentPas);
-                                    txtPas.setText(text);
-                                }
-                            });
+                                TextView txtPas = (TextView) findViewById(R.id.txtPassword);
+                                String text = String.format(getString(R.string.password_for), ssid, currentPas);
+                                txtPas.setText(text);
+                            }
+                        });
 
-                            isConnected = true;
-                            break;
-                        }
+                        isConnected = true;
+                        break;
                     }
                 }
 
