@@ -1,5 +1,6 @@
 package com.dominik.wlancrawl;
 
+import android.app.Application;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +14,17 @@ import android.util.Log;
  */
 public class MyReceiver extends BroadcastReceiver
 {
+    private static boolean isConnected = false;
+
+    public MyReceiver()
+    {
+        super();
+
+        ConnectivityManager connManager = (ConnectivityManager) App.getAppContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        isConnected = mWifi.isConnectedOrConnecting();
+    }
+
     @Override
     public void onReceive(Context context, Intent intent)
     {
@@ -23,6 +35,7 @@ public class MyReceiver extends BroadcastReceiver
             {
                 // Wifi is connected
                 Log.d("Inetify", "Wifi is connected: " + String.valueOf(networkInfo));
+                isConnected = true;
             }
         }
         else if (intent.getAction().equals(ConnectivityManager.CONNECTIVITY_ACTION))
@@ -35,5 +48,10 @@ public class MyReceiver extends BroadcastReceiver
                 Log.d("Inetify", "Wifi is disconnected: " + String.valueOf(networkInfo));
             }
         }
+    }
+
+    public static boolean getIsConnected()
+    {
+        return isConnected;
     }
 }

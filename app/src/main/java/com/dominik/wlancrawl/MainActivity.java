@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.v4.app.ActivityCompat;
@@ -149,28 +150,44 @@ public class MainActivity extends AppCompatActivity
 
                     Log.i("WIFI", "try: " + currentPas);
 
+                    if (MyReceiver.getIsConnected())
+                    {
+                        isConnected = true;
+
+                        break;
+                    }
+
                     connect(ssid, currentPas);
                     ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
-                    if (mWifi.isConnectedOrConnecting())
+                    try
                     {
-                        Log.i("WIFI", "found wlan");
-
-                        runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                TextView txtPas = (TextView) findViewById(R.id.txtPassword);
-                                String text = String.format(getString(R.string.password_for), ssid, currentPas);
-                                txtPas.setText(text);
-                            }
-                        });
-
-                        isConnected = true;
-                        break;
+                        Thread.sleep(4000);
                     }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+//                    if (mWifi.isConnectedOrConnecting())
+//                    {
+//                        Log.i("WIFI", "found wlan");
+//
+//                        runOnUiThread(new Runnable()
+//                        {
+//                            @Override
+//                            public void run()
+//                            {
+//                                TextView txtPas = (TextView) findViewById(R.id.txtPassword);
+//                                String text = String.format(getString(R.string.password_for), ssid, currentPas);
+//                                txtPas.setText(text);
+//                            }
+//                        });
+//
+//                        isConnected = true;
+//                        break;
+//                    }
                 }
 
                 // show toast message, if hacking was not successful
@@ -183,6 +200,17 @@ public class MainActivity extends AppCompatActivity
                         public void run()
                         {
                             Toast.makeText(MainActivity.this, String.format(getString(R.string.no_pas_found), ssid), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                else
+                {
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            Toast.makeText(MainActivity.this, getString(R.string.pas_found), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
