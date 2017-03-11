@@ -5,6 +5,8 @@
     <string name="permission_denied">permission denied</string>
     <string name="explain_permission">you need to give us this permission!!!</string>
     <string name="no_pas_found">hacking wifi %1s$ not successful :(</string>
-    <string name="hacking">hacking WIFI %1$s...</string>
-    <string name="pas_found">hacking was successful :) but i don\'t know the password</string>
+    <string name="hacking">hacking WIFI %1$s... %2$s</string>
+    <string name="pas_found">hacking was successful :)  password:</string>
+    <string name="random">try random</string>
+    <string name="waittime">waittime:</string>
 </resources>

@@ -25,6 +25,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity
     private WifiManager wifi;
     private BroadcastReceiver wifiReciever;
     private String currentPas = "";
+    private int waitTime = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -56,13 +59,32 @@ public class MainActivity extends AppCompatActivity
         if (!wifi.isWifiEnabled())
             wifi.setWifiEnabled(true);
 
+        final TextView txtWaitTime = (TextView)findViewById(R.id.txtWaitTime);
+        txtWaitTime.setText(getText(R.string.waittime) + " 4s");
+
+        SeekBar seekBarWait = (SeekBar) findViewById(R.id.seekBar);
+        seekBarWait.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener()
+        {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b)
+            {
+                waitTime = i;
+                txtWaitTime.setText(getText(R.string.waittime) + " " + Integer.toString(waitTime) + "s");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+
         Button btnFindWlan = (Button) findViewById(R.id.btnFindWlan);
         btnFindWlan.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view)
             {
-                Log.i("WIFI", "clicked");
                 scan();
             }
         });
@@ -125,13 +147,13 @@ public class MainActivity extends AppCompatActivity
         return (res != -1) && b && c;  // todo: how to recognise, when password was correct !?
     }
 
-    private void hackWIFI(final String ssid)
+    private void hackWIFI(final boolean random, final String ssid)
     {
         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setIndeterminate(true);
-        dialog.setMessage(String.format(getString(R.string.hacking), ssid));
+        dialog.setMessage(String.format(getString(R.string.hacking), ssid, ""));
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         dialog.show();
 
@@ -140,13 +162,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run()
             {
-                HackModul hackModul = new HackModul(ssid);
+                HackModul hackModul = new HackModul(random, ssid);
 
                 boolean isConnected = false;
 
                 while (hackModul.hasNext())
                 {
                     currentPas = hackModul.next();
+
+                    runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            dialog.setMessage(String.format(getString(R.string.hacking), ssid, currentPas));
+                        }
+                    });
 
                     Log.i("WIFI", "try: " + currentPas);
 
@@ -159,35 +190,15 @@ public class MainActivity extends AppCompatActivity
 
                     connect(ssid, currentPas);
                     ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
 
                     try
                     {
-                        Thread.sleep(4000);
+                        Thread.sleep(waitTime * 1000);          // s -> ms
                     }
                     catch (InterruptedException e)
                     {
                         e.printStackTrace();
                     }
-
-//                    if (mWifi.isConnectedOrConnecting())
-//                    {
-//                        Log.i("WIFI", "found wlan");
-//
-//                        runOnUiThread(new Runnable()
-//                        {
-//                            @Override
-//                            public void run()
-//                            {
-//                                TextView txtPas = (TextView) findViewById(R.id.txtPassword);
-//                                String text = String.format(getString(R.string.password_for), ssid, currentPas);
-//                                txtPas.setText(text);
-//                            }
-//                        });
-//
-//                        isConnected = true;
-//                        break;
-//                    }
                 }
 
                 // show toast message, if hacking was not successful
@@ -210,7 +221,7 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void run()
                         {
-                            Toast.makeText(MainActivity.this, getString(R.string.pas_found), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, getString(R.string.pas_found) + " " + currentPas, Toast.LENGTH_LONG).show();
                         }
                     });
                 }
@@ -262,7 +273,12 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> parent, final View view, int position, long id)
             {
                 final String item = (String) parent.getItemAtPosition(position);
-                hackWIFI(item);
+
+                // collect infos:
+                Switch swtch = (Switch)findViewById(R.id.switchRandom);
+                boolean random = swtch.isChecked();
+
+                hackWIFI(random, item);
             }
         });
     }

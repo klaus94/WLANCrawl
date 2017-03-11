@@ -5,6 +5,8 @@
     <string name="permission_denied">Erlaubnis verweigert</string>
     <string name="explain_permission">Du musst uns die Berechtigung geben!!!</string>
     <string name="no_pas_found">WIFI %1$s konnte nicht gehackt werden :(</string>
-    <string name="hacking">hacke WIFI %1$s...</string>
-    <string name="pas_found">Hacken erfolgreich :) aber das Passwort weiß ich nicht</string>
+    <string name="hacking">hacke WIFI %1$s... %2$s</string>
+    <string name="pas_found">Hacken erfolgreich :)  Passwort:</string>
+    <string name="random">zufälliges Probieren</string>
+    <string name="waittime">Wartezeit:</string>
 </resources>

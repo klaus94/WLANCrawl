@@ -12,6 +12,31 @@
     android:orientation="vertical"
     tools:context="com.dominik.wlancrawl.MainActivity">
 
+
+    <Switch
+        android:id="@+id/switchRandom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/random"
+        android:checked="true"/>
+
+
+
+    <TextView
+        android:id="@+id/txtWaitTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="@string/waittime"/>
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        style="@style/Widget.AppCompat.SeekBar.Discrete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="10"
+        android:progress="4"/>
+
     <Button
         android:id="@+id/btnFindWlan"
         android:layout_width="wrap_content"

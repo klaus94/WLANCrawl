@@ -3,6 +3,7 @@ package com.dominik.wlancrawl;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by dominik on 28.02.17.
@@ -12,8 +13,10 @@ public class HackModul implements Iterator<String>
     private String ssid;
     private int counter = 0;
     private List<String> generatedPasswords;
+    private boolean random;
+    private List<String> oldPasswords;
 
-    public HackModul(String ssid)
+    public HackModul(boolean random, String ssid)
     {
         if (ssid == null)
         {
@@ -25,7 +28,10 @@ public class HackModul implements Iterator<String>
         }
         this.ssid = ssid;
 
-        generatedPasswords = new LinkedList<String>();
+        this.random = random;
+
+        generatedPasswords = new LinkedList<>();
+        oldPasswords = new LinkedList<>();
 
 
         // generate list
@@ -47,7 +53,24 @@ public class HackModul implements Iterator<String>
     public String next()
     {
         counter += 1;
-        return generatedPasswords.get(counter-1);           // current index is "counter", need to increment counter before return
+
+        if (random)
+        {
+            Random rand = new Random();
+            String currentPas = generatedPasswords.get(rand.nextInt(generatedPasswords.size()));
+            while (oldPasswords.contains(currentPas))
+            {
+                currentPas = generatedPasswords.get(rand.nextInt(generatedPasswords.size()));
+            }
+            oldPasswords.add(currentPas);
+
+            return currentPas;
+        }
+        else
+        {
+            return generatedPasswords.get(counter-1);           // current index is "counter", need to increment counter before return
+        }
+
     }
 
     // HELPER METHODS that create password guesses
